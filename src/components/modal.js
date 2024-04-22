@@ -1,11 +1,7 @@
 // Функция открытия модального окна
 export function openModal(modalElement) {
-	modalElement.classList.add('popup_is-animated');
-	// setTimeout для того, чтобы модальные окна открывались плавно сразу, при первом клике
-	setTimeout(() => {
-		modalElement.classList.add('popup_is-opened');
-		document.addEventListener('keydown', closePopupEsc);
-	}, 0)
+	modalElement.classList.add('popup_is-opened');
+	document.addEventListener('keydown', closePopupEsc);
 };
 
 // Функция закрытия модального окна по крестику
