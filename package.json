@@ -30,5 +30,5 @@
   },
   "dependencies": {
     "core-js": "^3.37.0"
-  }
+	}
 }
