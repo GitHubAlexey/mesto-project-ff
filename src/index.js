@@ -1,6 +1,6 @@
 import './pages/index.css';
 import { initialCards } from './components/cards';
-import { openModal, closeModal } from './components/modal';
+import { openModal, closeModal } from './components/modal.js';
 import { createCard, deleteCard, likeCard } from './components/card.js';
 import { enableValidation, clearValidation } from './components/validation.js';
 import { getUserData, getCards, updateProfileInfo, addNewCard, updateProfileImageLink } from './components/api.js';
@@ -33,9 +33,6 @@ const profileImageUrlInput = formProfileImageUpdate.querySelector('.popup__input
 const popupTypeImage = document.querySelector('.popup_type_image');
 const popupImage = document.querySelector('.popup__image');
 const popupImageTitle = document.querySelector('.popup__caption');
-
-const buttonTextSave = document.querySelectorAll('.save');
-const buttonTextSaving = document.querySelectorAll('.saving');
 
 const validationConfig = {
   formSelector: '.popup__form',
@@ -176,11 +173,9 @@ formProfileImageUpdate.addEventListener('submit', updateProfileImage);
 // Функция показа процесса сохранения при нажатии на кнопку 'Сохранить' в модальных окнах
 function saveProcess(isSaving, buttonTextDefaul, buttonTextSavingProcess) {
 	if (isSaving === true) {
-		console.log('Сохранение...')
 		buttonTextDefaul.classList.add('saving__process_hidden');
 		buttonTextSavingProcess.classList.remove('saving__process_hidden');
 	} else if (isSaving === false) {
-		console.log('Hello')
 		buttonTextDefaul.classList.remove('saving__process_hidden');
 		buttonTextSavingProcess.classList.add('saving__process_hidden');
 	}

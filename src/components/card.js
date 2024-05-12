@@ -1,6 +1,10 @@
 import { cardTemplate } from '../index.js';
 import { deleteCardFromServer, putLikeCard, deleteLikeCard } from './api.js'
 
+import { openModal, closeModal } from './modal.js';
+const popupCardDeleteConfirm = document.querySelector('.popup_card-delete-confirm');
+const formCardDeleteConfirm = document.querySelector('div.popup_card-delete-confirm .popup__form');
+
 // Функция создания карточки
 export function createCard(cardData, deleteCard, likeButton, openPopupImg, myId) {
 	const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
@@ -31,20 +35,27 @@ export function createCard(cardData, deleteCard, likeButton, openPopupImg, myId)
 	}
 	cardLikeButton.addEventListener('click', likeButton);
 	
+// Слушатель на открытие попапа картинки
 	cardImage.addEventListener('click', openPopupImg);
 
 	return cardElement;
 }
 
-// Функция удаления карточки
+// Функция удаления карточки с подтверждением
 export function deleteCard(evt) {
-	deleteCardFromServer(evt.target.closest('.card').id)
+	openModal(popupCardDeleteConfirm);
+	const cardId = evt.target.closest('.card').id
+	const card = evt.target.closest('.card')
+	formCardDeleteConfirm.addEventListener('submit', () => {
+		deleteCardFromServer(cardId)
 		.then(() => {
-			evt.target.closest('.card').remove();
+			card.remove();
+			closeModal(popupCardDeleteConfirm);
 		})
 		.catch((err) => {
 			console.log(err);
 		});
+	});
 }
 
 // Функция лайка карточки
