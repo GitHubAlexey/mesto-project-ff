@@ -1,11 +1,8 @@
 import './pages/index.css';
-import { initialCards } from './components/cards';
 import { openModal, closeModal } from './components/modal.js';
-import { createCard, deleteCard, likeCard } from './components/card.js';
+import { createCard, likeCard } from './components/card.js';
 import { enableValidation, clearValidation } from './components/validation.js';
-import { getUserData, getCards, updateProfileInfo, addNewCard, updateProfileImageLink } from './components/api.js';
-
-export const cardTemplate = document.querySelector('#card-template').content;
+import { getUserData, getCards, updateProfileInfo, addNewCard, updateProfileImageLink, deleteCardFromServer } from './components/api.js';
 
 const cardsContainer = document.querySelector('.places__list');
 const profileEditButton = document.querySelector('.profile__edit-button');
@@ -19,7 +16,7 @@ const cardLinkInput = formAddCard.querySelector('.popup__input_type_url');
 const profileAddButton = document.querySelector('.profile__add-button');
 const popupTypeNewCard = document.querySelector('.popup_type_new-card');
 const popups = document.querySelectorAll('.popup');
-const popupCloseButton = document.querySelectorAll('.popup__close');
+const popupCloseButtons = document.querySelectorAll('.popup__close');
 
 const userName = document.querySelector('.profile__title');
 const userDescription = document.querySelector('.profile__description');
@@ -33,6 +30,10 @@ const profileImageUrlInput = formProfileImageUpdate.querySelector('.popup__input
 const popupTypeImage = document.querySelector('.popup_type_image');
 const popupImage = document.querySelector('.popup__image');
 const popupImageTitle = document.querySelector('.popup__caption');
+
+const popupCardDeleteConfirm = document.querySelector('.popup_card-delete-confirm');
+const formCardDeleteConfirm = document.querySelector('div.popup_card-delete-confirm .popup__form');
+let card = {};
 
 const validationConfig = {
   formSelector: '.popup__form',
@@ -73,7 +74,7 @@ popups.forEach((e) => {
 });
 
 // Слушатель событий на закрытие модального окна по крестику
-popupCloseButton.forEach((e) => {
+popupCloseButtons.forEach((e) => {
 	e.addEventListener('click', (evt) => {
 		if (evt.target.closest('.popup_is-opened')) {
 			const closeButton = e.closest('.popup_is-opened');
@@ -88,10 +89,10 @@ function editProfile(evt) {
 	saveProcess(true, evt.target.querySelector('.save'), evt.target.querySelector('.saving'));
 	const name = nameInput.value;
 	const job = jobInput.value;
-	userName.textContent = name;
-	userDescription.textContent = job;
 	updateProfileInfo(name, job)
 		.then(() => {
+			userName.textContent = name;
+			userDescription.textContent = job;
 			closeModal(popupTypeEdit);
 		})
 		.catch((err) => {
@@ -112,6 +113,26 @@ function openPopupImg(evt) {
 	popupImageTitle.textContent = evt.target.alt;
 }
 
+// Функция открытия модального окна подтверждения удаления карточки
+function deleteCardPopup(evt) {
+	openModal(popupCardDeleteConfirm);
+	card = evt.target.closest('.card');
+}
+
+// Функция удаления карточки с подтверждением
+function deleteCard(evt) {
+	evt.preventDefault();
+	deleteCardFromServer(card.id)
+		.then(() => {
+			card.remove();
+			closeModal(popupCardDeleteConfirm);
+		})
+		.catch((err) => {
+			console.log(err);
+		});
+}
+formCardDeleteConfirm.addEventListener('submit', deleteCard);
+
 // Функция добавления своей карточки на страницу
 function addCard(evt) {
 	evt.preventDefault();
@@ -119,7 +140,7 @@ function addCard(evt) {
 	addNewCard(cardTitleInput.value, cardLinkInput.value)
 		.then((result) => {
 			const cardOwnerId = result.owner._id;
-			cardsContainer.prepend(createCard(result, deleteCard, likeCard, openPopupImg, cardOwnerId));
+			cardsContainer.prepend(createCard(result, deleteCardPopup, likeCard, openPopupImg, cardOwnerId));
 			closeModal(popupTypeNewCard);
 			formAddCard.reset();
 		})
@@ -144,7 +165,7 @@ Promise.all([getUserData(), getCards()])
 		profileImage.setAttribute('style', `background-image: url(${res[0].avatar});`);
 		const myId = res[0]._id;
 		res[1].forEach((element) => {
-			cardsContainer.append(createCard(element, deleteCard, likeCard, openPopupImg, myId));
+			cardsContainer.append(createCard(element, deleteCardPopup, likeCard, openPopupImg, myId));
 		});
 	})
 	.catch((err) => {

@@ -51,8 +51,10 @@ function showInputError(formElement, inputElement, errorMessage, config) {
 
 function toggleButtonState(inputList, buttonElement, config) {
 	if (hasInvalidInput(inputList)) {
+		buttonElement.disabled = true;
 		buttonElement.classList.add(config.inactiveButtonClass);
 	} else {
+		buttonElement.disabled = false;
 		buttonElement.classList.remove(config.inactiveButtonClass);
 	}
 }
@@ -66,7 +68,8 @@ function hasInvalidInput(inputList) {
 export function clearValidation(formElement, config) {
 	const inputList = Array.from(formElement.querySelectorAll(config.inputSelector));
 	const buttonElement = formElement.querySelector(config.submitButtonSelector);
-
+	
+	buttonElement.disabled = true;
 	buttonElement.classList.add(config.inactiveButtonClass);
 
 	inputList.forEach((inputElement) => {
