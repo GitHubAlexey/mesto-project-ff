@@ -66,7 +66,7 @@ profileImageButton.addEventListener('click', () => {
 
 // Слушатель событий на закрытие модальных окон по нажатию на overlay
 popups.forEach((e) => {
-	e.addEventListener('click', (evt) => {
+	e.addEventListener('mousedown', (evt) => {
 		if (evt.target.classList.contains('popup_is-opened')) {
 			closeModal(e);
 		}
